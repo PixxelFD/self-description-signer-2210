@@ -5,17 +5,17 @@
     "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
   ],
   "type": "VerifiableCredential",
-  "id": "https://abc",
+  "id": "https://craftworks.euprogigant.io/sd/virtualResource/gxresourceAlgorithm_CRAFTWORKS_ToolCon.json",
   "issuer": "did:web:craftworks.euprogigant.io",
   "issuanceDate": "2023-09-04T19:11:56.086Z",
   "credentialSubject": {
     "type": "gx:ServiceOffering",
     "id": "https://xyz",
     "gx:providedBy": {
-      "id": "https://craftworks.euprogigant.io/sd/participant.json"
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
     },
     "gx:maintainedBy": {
-      "id": "https://craftworks.euprogigant.io/sd/participant.json"
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
     },
     "gx:serviceOffering:name": "AI-Model-CNC-ProfiTrainer",
     "gx:serviceOffering:description": "AI-Model for the prediction of the tool condition based on the DataSet corresponding to one manufactured workpiece with NC-program MVHv7.MPF from CNC machine tool of type HELLER CNC-ProfiTrainer.",
@@ -39,12 +39,5 @@
       "gx:accessType": "digital",
       "gx:formatType": "application/json"
     }
-  },
-  "proof": {
-    "type": "JsonWebSignature2020",
-    "created": "2023-09-07T15:19:35.045Z",
-    "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:craftworks.euprogigant.io",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Zs_Rcr2xagwSA-wwlXPUPPrOer5ZB2BNieVPB5snVVhHFvFRepb8aNCObza67Wf2KJs4UmNTwZydtlWqsXgursJep2hKoNyQZCb2iZ06G5H50Y7JFVzuUU7L7JrohCCBOP89llnLtEQUSj_1RTbiV2-fibvnJDkP4Tc-xAXWa_-ObeKJOsl8deCVncP_vlHdCT0rMM20Rp0S0Tw3GpMPF_MiQ2nd8i6gja6Rj80kAagsNGS_QL8tUmFWIPEPT4-hur0wEpiDE7HNoXUVP19JbDk2nm_qp184_KCVIjHENZdqS8smYQIMUBnP5mMyxFNvLF1Kv8fHtRYEB---7aS1xQ"
   }
 }

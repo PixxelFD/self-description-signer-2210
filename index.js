@@ -24,7 +24,7 @@ function checkInputFilenames(files) {
     selfDescription: false,
     registrationNumber: false,
     tandc: false,
-    serviceOffering: false,
+    serviceOffering: [],
     participant: false
   }
   files.forEach((file) => {
@@ -33,7 +33,7 @@ function checkInputFilenames(files) {
       if (m.index === regex.lastIndex) {
           regex.lastIndex++;
       }
-      // The result can be accessed through the `m`-variable.
+      // ! Only the last file of one type (except Service Offering) is considered !
       if (m.groups.rn) {
         foundFiles.registrationNumber = m[0]
       } else if (m.groups.sd) {
@@ -41,7 +41,7 @@ function checkInputFilenames(files) {
       } else if (m.groups.tandc) {
         foundFiles.tandc = m[0]
       } else if (m.groups.so) {
-        foundFiles.serviceOffering = m[0]
+        foundFiles.serviceOffering = [...foundFiles.serviceOffering, m[0]]
       } else if (m.groups.part) {
         foundFiles.participant = m[0]
       } else {
@@ -110,60 +110,6 @@ function fillInTandC(TermsAndConditions) {
   TermsAndConditions.issuer = process.env.CONTROLLER
 
   return TermsAndConditions
-}
-
-function sha256(input) {
-  return crypto.createHash('sha256').update(input).digest('hex')
-}
-
-async function sign(hash) {
-  const algorithm = 'PS256'
-  const rsaPrivateKey = await jose.importPKCS8(
-    process.env.PRIVATE_KEY,
-    algorithm
-  )
-
-  try {
-    const jws = await new jose.CompactSign(new TextEncoder().encode(hash))
-      .setProtectedHeader({ alg: 'PS256', b64: false, crit: ['b64'] })
-      .sign(rsaPrivateKey)
-
-    return jws
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-async function createProof(hash) {
-  const proof = {
-    type: 'JsonWebSignature2020',
-    created: new Date(CURRENT_TIME).toISOString(),
-    proofPurpose: 'assertionMethod',
-    verificationMethod:
-      process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu',
-    jws: await sign(hash),
-  }
-
-  return proof
-}
-
-async function verify(jws) {
-  const algorithm = 'PS256'
-  const x509 = await jose.importX509(process.env.CERTIFICATE, algorithm)
-  const publicKeyJwk = await jose.exportJWK(x509)
-
-  const pubkey = await jose.importJWK(publicKeyJwk, 'PS256')
-
-  try {
-    const result = await jose.compactVerify(jws, pubkey)
-
-    return {
-      protectedHeader: result.protectedHeader,
-      content: new TextDecoder().decode(result.payload),
-    }
-  } catch (error) {
-    return {}
-  }
 }
 
 async function createSignedSdFile(selfDescription) {
@@ -249,24 +195,25 @@ async function createOutputFolder(dir) {
 
 function buildVP(VCs, VP){
     if (arguments.length === 1) {
-      const VP = {
+      const Presentation = {
         "@context": "https://www.w3.org/2018/credentials/v1",
         type: "VerifiablePresentation",
         verifiableCredential: [...VCs]
       }
-      return VP
+      return Presentation
     } else {
       if (!VP.type.includes('VerifiablePresentation')) {
         throw new Error ('The second input has to be a Verifiable Presentation')
       }
-      VP.verifiableCredential = [...VP.verifiableCredential, ...VCs] 
+      VP.verifiableCredential = [...VP.verifiableCredential, ...VCs]
       return VP
     } 
 }
 
 async function main() {
   //TO-DO:  automatisierte Abfrage der TandC (registry API)
-  //        Verkettung von mehreren Service Offerings (Resource und Service Offering (z.B. über depends on)) [id ist wichtig]
+  //        ReadMe anpassen (passende ids betonen!)
+  //        alle Dateiabspeicherungen über createSignedSDFile() abwickeln
 
   logger(`📝 Loaded ${SD_PATH}`)
   const files = await fs.readdir(SD_PATH)
@@ -331,21 +278,24 @@ async function main() {
       console.dir('Something went wrong:')
       console.dir(error?.response?.data, { depth: null, colors: true })
     }
-  } else if (foundFiles.participant && foundFiles.serviceOffering) {
-    logger(`📝 Found Participant and Service. Creating Service-Offering VP...`)
+  } else if (foundFiles.participant && foundFiles.serviceOffering.length) {
+    logger(`📝 Found Participant and Service(s). Creating Service-Offering VP...`)
     try {
       const participant = require(SD_PATH + foundFiles.participant)
-      const service = require(SD_PATH + foundFiles.serviceOffering)
-      
-      const signedService = await signVerifiableCredential(process.env.PRIVATE_KEY, service, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
-      const filenameSignedSd = await createSignedSdFile(serviceOfferingVP)
-      logger(`📁 ${filenameSignedSd} saved`)
-
+      const signedServices = []
+      for (const serviceOff of foundFiles.serviceOffering) {
+        const service = require(SD_PATH + serviceOff)
+        const signedService = await signVerifiableCredential(process.env.PRIVATE_KEY, service, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
+        signedServices.push(signedService)
+        const filenameSignedSd = `${OUTPUT_DIR}${CURRENT_TIME}_${serviceOff}_self-signed.json`
+        await fs.writeFile(filenameSignedSd, JSON.stringify(signedService, null, 2))
+        logger(`📁 ${filenameSignedSd} saved`)
+      }
+       
       // the following code only works if you hosted your created did.json
       logger('🔍 Checking Service Offering with the Compliance Service...')
-
-      const serviceOfferingVP = buildVP(signedService, participant)
-      const complianceCredential = await signSd(VP)
+      const serviceOfferingVP = buildVP(signedServices, participant)
+      const complianceCredential = await signSd(serviceOfferingVP)
       logger(
         complianceCredential
           ? '🔒 SD signed successfully (compliance service)'
@@ -354,7 +304,7 @@ async function main() {
 
       if (complianceCredential) {
         const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_service-offeringVP_complete.json`
-        await fs.writeFile(filenameVP, JSON.stringify(VP, null, 2))
+        await fs.writeFile(filenameVP, JSON.stringify(serviceOfferingVP, null, 2))
         logger(`📁 ${filenameVP} saved`)
 
         const filenameComplianceCredential = `${OUTPUT_DIR}${CURRENT_TIME}_service-offeringVP_complianceCredential.json`

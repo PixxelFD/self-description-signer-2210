@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/suites/jws-2020/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+  ],
+  "type": "VerifiableCredential",
+  "id": "https://craftworks.euprogigant.io/sd/serviceOffering/gxserviceAlgorithm_CRAFTWORKS_ToolCon.json",
+  "issuer": "did:web:craftworks.euprogigant.io",
+  "issuanceDate": "2023-09-04T19:11:56.086Z",
+  "credentialSubject": {
+    "type": "gx:ServiceOffering",
+    "id": "https://craftworks.euprogigant.io/sd/serviceOffering/gxserviceAlgorithm_CRAFTWORKS_ToolCon.json",
+    "gx:providedBy": {
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
+    },
+    "gx:maintainedBy": {
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
+    },
+    "gx:serviceOffering:name": "ToolCon-Algorithm - Validation Platform Demonstrator",
+    "gx:serviceOffering:description": "The Algorithm Service Offering enables the classification the condition OK/NotOK of the cutting tool used in the milling machine CNC-ProfiTrainer using an AI-Algorithm.",
+    "gx:serviceOffering:serviceModel": "subscription",
+    "gx:serviceOffering:settlement": [
+      {
+        "gx:serviceOffering:currencyName": "Ocean",
+        "gx:serviceOffering:currencyAmount": "1"
+      }
+    ],
+    "gx:serviceOffering:subscriptionDuration": "86400",
+    "gx:policy": "computeToDataOnly",
+    "gx:serviceOffering:webAddress": "https://portal.euprogigant.io/",
+    "gx:termsAndConditions": {
+      "gx:URL": "https://creativecommons.org/licenses/by/4.0/",
+      "gx:hash": "5F014F5D15BAFE120CBB813E543969989B6C45D1423AFAC3CCBBBCDB74B04C79"
+    },
+    "gx:serviceOffering:gdpr": [
+      {
+        "gx:serviceOffering:imprint": "https://www.craftworks.ai/imprint"
+      },
+      {
+        "gx:serviceOffering:privacyPolicy": "https://www.craftworks.ai/data-protection-cookie-policy"
+      }
+    ],
+    "gx:dataProtectionRegime": ["GDPR2016"],
+    "gx:dependsOn": {
+      "id": "https://xyz"
+    },
+    "gx:dataAccountExport": {
+      "gx:requestType": "API",
+      "gx:accessType": "digital",
+      "gx:formatType": "application/json"
+    }
+  }
+}
