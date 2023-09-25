@@ -8,10 +8,8 @@ const jose = require('jose')
 const { CompactSign, importPKCS8 } = require('jose')
 const canonize = require('jsonld').canonize
 
-const SD_PATH = process.argv.slice(2)[0] || CONF 
-const selfDescription = require(SD_PATH + 'self-description.json')
-const TermsAndConditions = require(SD_PATH + 'tandc.json')
-const registrationNumber = require(SD_PATH + 'registrationnumber.json')
+const SD_PATH = process.argv.slice(2)[0] || CONF
+
 const CURRENT_TIME = new Date().getTime()
 const BASE_URL = process.env.BASE_URL || 'https://compliance.gaia-x.eu'
 const BASE_URL_REGISTRATION = process.env.BASE_URL_REGISTRATION || 'https://registrationnumber.notary.gaia-x.eu'
@@ -20,8 +18,41 @@ const API_VERSION = process.env.API_VERSION
 const OUTPUT_DIR = process.argv.slice(2)[1] || './output/'
 createOutputFolder(OUTPUT_DIR)
 
+function checkInputFilenames(files) {
+  const regex = /.*(?:(?<rn>registrationnumber)|(?<sd>self-description)|(?<tandc>tandc)|(?<so>service-offering)|(?<part>participant))(?!_complianceCredential)(?:.*(?!_complianceCredential))(?:\.json)/gi
+  const foundFiles = {
+    selfDescription: false,
+    registrationNumber: false,
+    tandc: false,
+    serviceOffering: false,
+    participant: false
+  }
+  files.forEach((file) => {
+    while ((m = regex.exec(file)) !== null) {
+      // This is necessary to avoid infinite loops with zero-width matches
+      if (m.index === regex.lastIndex) {
+          regex.lastIndex++;
+      }
+      // The result can be accessed through the `m`-variable.
+      if (m.groups.rn) {
+        foundFiles.registrationNumber = m[0]
+      } else if (m.groups.sd) {
+        foundFiles.selfDescription = m[0]
+      } else if (m.groups.tandc) {
+        foundFiles.tandc = m[0]
+      } else if (m.groups.so) {
+        foundFiles.serviceOffering = m[0]
+      } else if (m.groups.part) {
+        foundFiles.participant = m[0]
+      } else {
+        throw new Error(`Found match: ${m[0]}, that is not of group rn, sd, tandc, so or part`)
+      }
+    }
+  })
+  return foundFiles
+}
 
-const signVerifiableCredential = async (pemPrivateKey, verifiableCredential, verificationMethod) => {
+async function signVerifiableCredential (pemPrivateKey, verifiableCredential, verificationMethod) {
   // Step 1: Import key from the PEM format
   const rsaPrivateKey = await importPKCS8(pemPrivateKey, 'PS256')
   // Step 2: Compute the hash of the normalized verifiable credential
@@ -73,20 +104,13 @@ function getApiVersionedUrl() {
 function getApiVersionedUrlRN() {
   return `${BASE_URL_REGISTRATION}${API_VERSION ? '/' + API_VERSION : ''}`
 }
-/*
-async function canonize(selfDescription) {
-  const URL = `${getApiVersionedUrl()}/normalize`
-  const { data } = await axios.post(URL, selfDescription)
 
-  return data
-}*/
 function fillInTandC(TermsAndConditions) {
   TermsAndConditions.issuanceDate = new Date(CURRENT_TIME).toISOString()
   TermsAndConditions.issuer = process.env.CONTROLLER
 
   return TermsAndConditions
 }
-
 
 function sha256(input) {
   return crypto.createHash('sha256').update(input).digest('hex')
@@ -143,10 +167,10 @@ async function verify(jws) {
 }
 
 async function createSignedSdFile(selfDescription) {
-  const status = selfDescription.proof ? 'self-signed' : 'complete'
+  const status = selfDescription.proof ? 'self-signed' : 'unsigned'
   const type = selfDescription.credentialSubject['type'].slice(3)
   const data = JSON.stringify(selfDescription, null, 2)
-  const filename = `${OUTPUT_DIR}${CURRENT_TIME}_${status}_${type}.json`
+  const filename = `${OUTPUT_DIR}${CURRENT_TIME}_${type}_${status}.json`
 
   await fs.writeFile(filename, data)
 
@@ -191,7 +215,7 @@ async function createRegistrationNumberFile(registrationNumber) {
   /*const RN = {
     '@context': ["https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"],
     type: 'gx:legalRegistrationNumber',
-    id: process.env.verificationMethod + ':legalRegistraionNumber'
+    id: process.env.verificationMethod + ':legalRegistrationNumber'
   }
   for (const {key, value} of Object.entries(registrationNumber)) {
     RN[`gx:${key}`] = value
@@ -223,68 +247,132 @@ async function createOutputFolder(dir) {
   }
 }
 
-function buildVP(VC1, VC2, VC3){
-    const VP = {
-      "@context": "https://www.w3.org/2018/credentials/v1",
-      type: "VerifiablePresentation",
-      verifiableCredential: [VC1, VC2, VC3]
-    }
-  return VP 
+function buildVP(VCs, VP){
+    if (arguments.length === 1) {
+      const VP = {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        type: "VerifiablePresentation",
+        verifiableCredential: [...VCs]
+      }
+      return VP
+    } else {
+      if (!VP.type.includes('VerifiablePresentation')) {
+        throw new Error ('The second input has to be a Verifiable Presentation')
+      }
+      VP.verifiableCredential = [...VP.verifiableCredential, ...VCs] 
+      return VP
+    } 
 }
 
 async function main() {
+  //TO-DO:  Variables einlesen der in Config abgelegten Dateien
+  //          Bei keinen Dateien: nur DID
+  //          sobald VP enthalten: VP mit ServiceOffering kombinieren
+  //          sonst drei Dateien (tandc, participant, registrationnumber) [siehe unten]
+
   logger(`📝 Loaded ${SD_PATH}`)
+  const files = await fs.readdir(SD_PATH)
+  const foundFiles = checkInputFilenames(files)
 
-  try {
-    //Participant
-    const participant = await signVerifiableCredential(process.env.PRIVATE_KEY, selfDescription, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
-    
-    const filenameSignedSd = await createSignedSdFile(participant)
-    logger(`📁 ${filenameSignedSd} saved`)
-    
-    //TandC
-    const filledTandC = fillInTandC(TermsAndConditions)
-
-    const TandC = await signVerifiableCredential(process.env.PRIVATE_KEY, filledTandC, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
-    
-    const filenameTandC = `${OUTPUT_DIR}${CURRENT_TIME}_tandc_self-signed.json`
-    await fs.writeFile(filenameTandC, JSON.stringify(TandC, null, 2))
-    logger(`📁 ${filenameTandC} saved`, '\n')
-
-    //RegistrationNumber
-    const {filenameRegistrationNumber, RN} = await createRegistrationNumberFile(registrationNumber)
-    logger(`📁 ${filenameRegistrationNumber} saved`, '\n')
-
+  if (Object.values(foundFiles).every((v) => v === false)) {
+    logger(`📝 No files found in the given directory. Creating DID File...`, '\n')
     //DID
     const filenameDid = await createDIDFile()
     logger(`📁 ${filenameDid} saved`, '\n')
+  } else if (foundFiles.tandc && foundFiles.selfDescription && foundFiles.registrationNumber) {
+    logger(`📝 Found Self-Description, Registration number and Terms and Conditions. Creating Participant VP...`, '\n')
+    try {
+      const selfDescription = require(SD_PATH + foundFiles.selfDescription)
+      const TermsAndConditions = require(SD_PATH + foundFiles.tandc)
+      const registrationNumber = require(SD_PATH + foundFiles.registrationNumber)
 
-    // the following code only works if you hosted your created did.json
-    logger('🔍 Checking Self Description with the Compliance Service...')
-    
-    const VP = buildVP(RN, participant, TandC)
-    const complianceCredential = await signSd(VP)
-    logger(
-      complianceCredential
-        ? '🔒 SD signed successfully (compliance service)'
-        : '❌ SD signing failed (compliance service)'
-    )
-    
-    if (complianceCredential) {
-      const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_participant_complete.json`
-      await fs.writeFile(filenameVP, JSON.stringify(VP, null, 2))
-      logger(`📁 ${filenameVP} saved`)
+      //Participant
+      const signedSD = await signVerifiableCredential(process.env.PRIVATE_KEY, selfDescription, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
+      
+      const filenameSignedSd = await createSignedSdFile(signedSD)
+      logger(`📁 ${filenameSignedSd} saved`)
+      
+      //TandC
+      const filledTandC = fillInTandC(TermsAndConditions)
 
-      const filenameComplianceCredential = `${OUTPUT_DIR}${CURRENT_TIME}_participant_complianceCredential.json`
-      await fs.writeFile(filenameComplianceCredential, JSON.stringify(complianceCredential, null, 2))
-      logger(`📁 ${filenameComplianceCredential} saved`)
-    } else {
-      const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_participant_self-signed.json`
-      logger(`📁 ${filenameVP} saved`)
+      const signedTandC = await signVerifiableCredential(process.env.PRIVATE_KEY, filledTandC, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
+      
+      const filenameTandC = `${OUTPUT_DIR}${CURRENT_TIME}_tandc_self-signed.json`
+      await fs.writeFile(filenameTandC, JSON.stringify(signedTandC, null, 2))
+      logger(`📁 ${filenameTandC} saved`)
+
+      //RegistrationNumber
+      const {filenameRegistrationNumber, RN} = await createRegistrationNumberFile(registrationNumber)
+      logger(`📁 ${filenameRegistrationNumber} saved`, '\n')
+
+      // the following code only works if you hosted your created did.json
+      logger('🔍 Checking Self Description with the Compliance Service...')
+      
+      const VP = buildVP([RN, signedSD, signedTandC])
+      const complianceCredential = await signSd(VP)
+      logger(
+        complianceCredential
+          ? '🔒 SD signed successfully (compliance service)'
+          : '❌ SD signing failed (compliance service)'
+      )
+      
+      if (complianceCredential) {
+        const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_participantVP_complete.json`
+        await fs.writeFile(filenameVP, JSON.stringify(VP, null, 2))
+        logger(`📁 ${filenameVP} saved`)
+
+        const filenameComplianceCredential = `${OUTPUT_DIR}${CURRENT_TIME}_participantVP_complianceCredential.json`
+        await fs.writeFile(filenameComplianceCredential, JSON.stringify(complianceCredential, null, 2))
+        logger(`📁 ${filenameComplianceCredential} saved`)
+      } else {
+        const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_participantVP_self-signed.json`
+        await fs.writeFile(filenameVP, JSON.stringify(VP, null, 2))
+        logger(`📁 ${filenameVP} saved`)
+      }
+    } catch (error) {
+      console.dir('Something went wrong:')
+      console.dir(error?.response?.data, { depth: null, colors: true })
     }
-  } catch (error) {
-    console.dir('Something went wrong:')
-    console.dir(error?.response?.data, { depth: null, colors: true })
+  } else if (foundFiles.participant && foundFiles.serviceOffering) {
+    logger(`📝 Found Participant and Service. Creating Service-Offering VP...`)
+    try {
+      const participant = require(SD_PATH + foundFiles.participant)
+      const service = require(SD_PATH + foundFiles.serviceOffering)
+      
+      const signedService = await signVerifiableCredential(process.env.PRIVATE_KEY, service, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
+      const filenameSignedSd = await createSignedSdFile(serviceOfferingVP)
+      logger(`📁 ${filenameSignedSd} saved`)
+
+      // the following code only works if you hosted your created did.json
+      logger('🔍 Checking Service Offering with the Compliance Service...')
+
+      const serviceOfferingVP = buildVP(signedService, participant)
+      const complianceCredential = await signSd(VP)
+      logger(
+        complianceCredential
+          ? '🔒 SD signed successfully (compliance service)'
+          : '❌ SD signing failed (compliance service)'
+      )
+
+      if (complianceCredential) {
+        const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_service-offeringVP_complete.json`
+        await fs.writeFile(filenameVP, JSON.stringify(VP, null, 2))
+        logger(`📁 ${filenameVP} saved`)
+
+        const filenameComplianceCredential = `${OUTPUT_DIR}${CURRENT_TIME}_service-offeringVP_complianceCredential.json`
+        await fs.writeFile(filenameComplianceCredential, JSON.stringify(complianceCredential, null, 2))
+        logger(`📁 ${filenameComplianceCredential} saved`)
+      } else {
+        const filenameVP = `${OUTPUT_DIR}${CURRENT_TIME}_service-offeringVP_self-signed.json`
+        await fs.writeFile(filenameVP, JSON.stringify(serviceOfferingVP, null, 2))
+        logger(`📁 ${filenameVP} saved`)
+      }
+    } catch (error) {
+      console.dir('Something went wrong:')
+      console.dir(error?.response?.data, { depth: null, colors: true })
+    }
+  } else {
+    throw new Error('Not the right combination of files was provided for participant or service-offering')
   }
 }
 
