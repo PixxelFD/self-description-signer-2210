@@ -265,10 +265,8 @@ function buildVP(VCs, VP){
 }
 
 async function main() {
-  //TO-DO:  Variables einlesen der in Config abgelegten Dateien
-  //          Bei keinen Dateien: nur DID
-  //          sobald VP enthalten: VP mit ServiceOffering kombinieren
-  //          sonst drei Dateien (tandc, participant, registrationnumber) [siehe unten]
+  //TO-DO:  automatisierte Abfrage der TandC (registry API)
+  //        Verkettung von mehreren Service Offerings (Resource und Service Offering (z.B. über depends on)) [id ist wichtig]
 
   logger(`📝 Loaded ${SD_PATH}`)
   const files = await fs.readdir(SD_PATH)

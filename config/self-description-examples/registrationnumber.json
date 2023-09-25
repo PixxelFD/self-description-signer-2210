@@ -1,0 +1,6 @@
+{
+  "@context": ["https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
+  "type": "gx:legalRegistrationNumber",
+  "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_registrationnumber.json",
+	"gx:leiCode": "529900F96SGD8JFV9842"
+}
