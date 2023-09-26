@@ -1,0 +1,52 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/suites/jws-2020/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+  ],
+  "type": "VerifiableCredential",
+  "id": "https://craftworks.euprogigant.io/sd/virtualResource/gxresourceAlgorithm_CRAFTWORKS_ToolCon.json",
+  "issuer": "did:web:craftworks.euprogigant.io",
+  "issuanceDate": "2023-09-04T19:11:56.086Z",
+  "credentialSubject": {
+    "type": "gx:ServiceOffering",
+    "id": "https://xyz",
+    "gx:providedBy": {
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
+    },
+    "gx:maintainedBy": {
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json"
+    },
+    "gx:serviceOffering:name": "AI-Model-CNC-ProfiTrainer",
+    "gx:serviceOffering:description": "AI-Model for the prediction of the tool condition based on the DataSet corresponding to one manufactured workpiece with NC-program MVHv7.MPF from CNC machine tool of type HELLER CNC-ProfiTrainer.",
+    "gx:policy": "computeToDataOnly",
+    "gx:serviceOffering:webAddress": "https://portal.euprogigant.io/",
+    "gx:termsAndConditions": {
+      "gx:URL": "https://creativecommons.org/licenses/by/4.0/",
+      "gx:hash": "5F014F5D15BAFE120CBB813E543969989B6C45D1423AFAC3CCBBBCDB74B04C79"
+    },
+    "gx:serviceOffering:gdpr": [
+      {
+        "gx:serviceOffering:imprint": "https://www.craftworks.ai/imprint"
+      },
+      {
+        "gx:serviceOffering:privacyPolicy": "https://www.craftworks.ai/data-protection-cookie-policy"
+      }
+    ],
+    "gx:dataProtectionRegime": [
+      "GDPR2016"
+    ],
+    "gx:dataAccountExport": {
+      "gx:requestType": "API",
+      "gx:accessType": "digital",
+      "gx:formatType": "application/json"
+    }
+  },
+  "proof": {
+    "type": "JsonWebSignature2020",
+    "created": "2023-09-25T19:39:06.164Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:ptw.tu-darmstadt.euprogigant.io",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..KMGH3rYbYh9WiAjyjVN26ky09koqqla95h13sFv4ImVDZBTGh3ieisTBs1-KEpimb7NSI79DspQetSAmpJ_H0nb1FMNAsLbEgGfmvSoQS-rnbd35YtMZ6hp4LqKHw2XbRA19ZpA44wmNroCIz_ji481XV_qltLGsLTSR72VXriLvIIcd9K3tHbSdgc5pTLniV1E525pxcfAX3xbSzxzBP_FM_-k2rVwN10XqHMFt9zZ_IRntnW1HUCqa-UdS2-82PJ8SM4qoLJQsHKnniHlErot3yDyr4ZjxTyGVbaFnmhB-9oGZ3e2Hvbs9az4fwpzobwJCcg44ow7Xc-vB9z9jYQ"
+  }
+}

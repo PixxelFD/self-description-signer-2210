@@ -1,0 +1,51 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+  ],
+  "type": [
+    "VerifiableCredential"
+  ],
+  "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json",
+  "issuer": "did:web:ptw.tu-darmstadt.euprogigant.io",
+  "issuanceDate": "2023-07-25T11:33:14.113Z",
+  "credentialSubject": {
+    "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json",
+    "type": "gx:LegalParticipant",
+    "gx:name": "Institut für Produktionsmanagement, Technologie und Werkzeugmaschinen",
+    "gx:legalName": "Technische Universität Darmstadt",
+    "gx:legalRegistrationNumber": {
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_registrationnumber.json"
+    },
+    "gx:headquarterAddress": {
+      "gx:countrySubdivisionCode": "DE-HE",
+      "gx:addressCountryCode": "DE",
+      "gx:locality": "Darmstadt",
+      "gx:postalCode": "64297",
+      "gx:streetAddress": "Otto-Berndt-Strasse 2"
+    },
+    "gx:legalAddress": {
+      "gx:countrySubdivisionCode": "DE-HE",
+      "gx:addressCountryCode": "DE",
+      "gx:locality": "Darmstadt",
+      "gx:postalCode": "64289",
+      "gx:streetAddress": "Karolinenplatz 5"
+    },
+    "gx:website": "https://ptw.tu-darmstadt.de",
+    "gx:blockchainAccountId": [
+      {
+        "gx:blockchainId": "100",
+        "gx:blockchainName": "GEN-X",
+        "gx:blockchainAccountId": "0x4A806a4851472F7cFd579d3FF5465F03c3c2B5d4"
+      }
+    ]
+  },
+  "proof": {
+    "type": "JsonWebSignature2020",
+    "created": "2023-09-25T17:58:58.338Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:ptw.tu-darmstadt.euprogigant.io",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..KIoZbDIcURcXY7x2yb-WvVbsHm2ld0XfycsFVKk8nH8Oyo7RgL9JORvWI5E5aRN7a4Df7NjU3tLKx9aOxw0eNKXA79aKTwgXcSVhD7RYgRkwP2viZBiVHrEWozTAZ6rFnDT_ij0Ms_7d2SmgH-nSR0rwmdmfIbGKB93LzBWVjXM2P9Q3KaQ8LsNut1sXUDBcn4ZxYij81FC7dCLUApK5_RwCNTyVTmEz6kQ3i3-R0029rs1sbIAgVTp-nwPDt2eturukM-qZ-FHKugymCaB0BfXkoDbl-EujOPksO5y4StH1Dpvv7acZ6sezNsf6UyJCqtcCbmCQeL51xFIq5Y8NVA"
+  }
+}

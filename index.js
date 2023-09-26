@@ -279,7 +279,7 @@ async function main() {
       console.dir(error?.response?.data, { depth: null, colors: true })
     }
   } else if (foundFiles.participant && foundFiles.serviceOffering.length) {
-    logger(`📝 Found Participant and Service(s). Creating Service-Offering VP...`)
+    logger(`📝 Found Participant and Service(s). Creating Service-Offering VP...`, '\n')
     try {
       const participant = require(SD_PATH + foundFiles.participant)
       const signedServices = []
@@ -287,13 +287,13 @@ async function main() {
         const service = require(SD_PATH + serviceOff)
         const signedService = await signVerifiableCredential(process.env.PRIVATE_KEY, service, process.env.VERIFICATION_METHOD ?? 'did:web:compliance.lab.gaia-x.eu')
         signedServices.push(signedService)
-        const filenameSignedSd = `${OUTPUT_DIR}${CURRENT_TIME}_${serviceOff}_self-signed.json`
+        const filenameSignedSd = `${OUTPUT_DIR}${CURRENT_TIME}_${serviceOff}_self-signed.json` //Todo: remove .json in serviceOff
         await fs.writeFile(filenameSignedSd, JSON.stringify(signedService, null, 2))
         logger(`📁 ${filenameSignedSd} saved`)
       }
        
       // the following code only works if you hosted your created did.json
-      logger('🔍 Checking Service Offering with the Compliance Service...')
+      logger('\n','🔍 Checking Service Offering with the Compliance Service...')
       const serviceOfferingVP = buildVP(signedServices, participant)
       const complianceCredential = await signSd(serviceOfferingVP)
       logger(

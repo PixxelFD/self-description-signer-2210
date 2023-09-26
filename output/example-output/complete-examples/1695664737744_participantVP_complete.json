@@ -1,0 +1,115 @@
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+      ],
+      "type": [
+        "VerifiableCredential"
+      ],
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_registrationnumber.json",
+      "issuer": "did:web:registration.lab.gaia-x.eu:development",
+      "issuanceDate": "2023-09-25T17:58:59.438Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:legalRegistrationNumber",
+        "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_registrationnumber.json",
+        "gx:leiCode": "529900F96SGD8JFV9842",
+        "gx:leiCode-countryCode": "DE",
+        "gx:leiCode-subdivisionCountryCode": "DE-HE"
+      },
+      "evidence": [
+        {
+          "gx:evidenceURL": "https://api.gleif.org/api/v1/lei-records/",
+          "gx:executionDate": "2023-09-25T17:58:59.438Z",
+          "gx:evidenceOf": "gx:leiCode"
+        }
+      ],
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-09-25T17:59:00.142Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:registration.lab.gaia-x.eu:development#X509-JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..tz37wfJKCk-nbPCvSTSd36ReAxyOhlz590xCucfsRGB2WVaPe-999A9CCVyrhfFEQYJjuG1aATyVJw-ivZvbo2_7H-APfifJMSPH_aRR-ibS2sm9P8Lzwdk3kp-bswKddSZoc9dUyD1JjwaL-0akgWmZAbxqw0ANYZ_23GDH5Bs7jhGP78GcxFqMD_jEhNooTKvjkAcaOSCWIO0BGNEIRFqEJnnYFPIAJdKNwHRDbtwTJenBvWwV6s3mK7ZZZsynmCbLMnRReHhbaTTswsE7iVmEDgwf9Vh9iiVQN89_xawtDsLDy5z3ikqgIqvX66SEOpVZmwVRTkNDhE4sszSJLw"
+      }
+    },
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+      ],
+      "type": [
+        "VerifiableCredential"
+      ],
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json",
+      "issuer": "did:web:ptw.tu-darmstadt.euprogigant.io",
+      "issuanceDate": "2023-07-25T11:33:14.113Z",
+      "credentialSubject": {
+        "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json",
+        "type": "gx:LegalParticipant",
+        "gx:name": "Institut für Produktionsmanagement, Technologie und Werkzeugmaschinen",
+        "gx:legalName": "Technische Universität Darmstadt",
+        "gx:legalRegistrationNumber": {
+          "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_registrationnumber.json"
+        },
+        "gx:headquarterAddress": {
+          "gx:countrySubdivisionCode": "DE-HE",
+          "gx:addressCountryCode": "DE",
+          "gx:locality": "Darmstadt",
+          "gx:postalCode": "64297",
+          "gx:streetAddress": "Otto-Berndt-Strasse 2"
+        },
+        "gx:legalAddress": {
+          "gx:countrySubdivisionCode": "DE-HE",
+          "gx:addressCountryCode": "DE",
+          "gx:locality": "Darmstadt",
+          "gx:postalCode": "64289",
+          "gx:streetAddress": "Karolinenplatz 5"
+        },
+        "gx:website": "https://ptw.tu-darmstadt.de",
+        "gx:blockchainAccountId": [
+          {
+            "gx:blockchainId": "100",
+            "gx:blockchainName": "GEN-X",
+            "gx:blockchainAccountId": "0x4A806a4851472F7cFd579d3FF5465F03c3c2B5d4"
+          }
+        ]
+      },
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-09-25T17:58:58.338Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:ptw.tu-darmstadt.euprogigant.io",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..KIoZbDIcURcXY7x2yb-WvVbsHm2ld0XfycsFVKk8nH8Oyo7RgL9JORvWI5E5aRN7a4Df7NjU3tLKx9aOxw0eNKXA79aKTwgXcSVhD7RYgRkwP2viZBiVHrEWozTAZ6rFnDT_ij0Ms_7d2SmgH-nSR0rwmdmfIbGKB93LzBWVjXM2P9Q3KaQ8LsNut1sXUDBcn4ZxYij81FC7dCLUApK5_RwCNTyVTmEz6kQ3i3-R0029rs1sbIAgVTp-nwPDt2eturukM-qZ-FHKugymCaB0BfXkoDbl-EujOPksO5y4StH1Dpvv7acZ6sezNsf6UyJCqtcCbmCQeL51xFIq5Y8NVA"
+      }
+    },
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+      ],
+      "type": "VerifiableCredential",
+      "issuanceDate": "2023-09-25T17:58:57.744Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:GaiaXTermsAndConditions",
+        "gx:termsAndConditions": "The PARTICIPANT signing the Self-Description agrees as follows:\n- to update its descriptions about any changes, be it technical, organizational, or legal - especially but not limited to contractual in regards to the indicated attributes present in the descriptions.\n\nThe keypair used to sign Verifiable Credentials will be revoked where Gaia-X Association becomes aware of any inaccurate statements in regards to the claims which result in a non-compliance with the Trust Framework and policy rules defined in the Policy Rules and Labelling Document (PRLD).",
+        "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/2210_gx_tandc.json"
+      },
+      "issuer": "did:web:ptw.tu-darmstadt.euprogigant.io",
+      "id": "https://ptw.tu-darmstadt.euprogigant.io/sd/participant.json",
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-09-25T17:58:59.017Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:ptw.tu-darmstadt.euprogigant.io",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..NCCsb1Sv1ljp_uR21uztxnvgg9mj7Vy7r3iySxLQbG7cR4g_PA97N2g_TenDYXStEVLPq1pwBrdNW-QlLswYoJhfa5AEvRbmUFXYClhjULNOhN3s8cC7_2hOiKF1yv0JtPgD6M8CZmuS5DYrKjjc-mZGHzcPidXoDGtBHhm5eTyr68lM3vI_v3x1csB0xRGQE662mOQY-VLwQrHHtfpXJ4SOalfZ5w4XCabkeKa3LFEQ7guE4yVg6nYsdKuAwq4eOuKcCQbd0eYmCScmwoj6vlDLcZ1UeiSxFO4EKlxMd-ASKJrUzaDInWZSbKzBA06QRg6VMSS7Q52WaGRFubEWZw"
+      }
+    }
+  ]
+}
