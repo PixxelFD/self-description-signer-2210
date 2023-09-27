@@ -219,7 +219,7 @@ async function main() {
   const files = await fs.readdir(SD_PATH)
   const foundFiles = checkInputFilenames(files)
 
-  if (Object.values(foundFiles).every((v) => v === false)) {
+  if (Object.values(foundFiles).every((v) => v === false || v.length === 0)) {
     logger(`📝 No files found in the given directory. Creating DID File...`, '\n')
     //DID
     const filenameDid = await createDIDFile()
