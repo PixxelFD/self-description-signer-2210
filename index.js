@@ -247,8 +247,14 @@ async function main() {
       logger(`📁 ${filenameTandC} saved`)
 
       //RegistrationNumber
-      const {filenameRegistrationNumber, RN} = await createRegistrationNumberFile(registrationNumber)
-      logger(`📁 ${filenameRegistrationNumber} saved`, '\n')
+      if (registrationNumber.type == "gx:legalRegistrationNumber"){
+        var {filenameRegistrationNumber, RN} = await createRegistrationNumberFile(registrationNumber)
+        logger(`📁 ${filenameRegistrationNumber} saved`, '\n')
+      } else if (JSON.stringify(registrationNumber.type) == '["VerifiableCredential"]') {
+        var RN = registrationNumber
+      } else {
+        logger(`unknown type in ${foundFiles.registrationNumber}`)
+      }
 
       // the following code only works if you hosted your created did.json
       logger('🔍 Checking Self Description with the Compliance Service...')
