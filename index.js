@@ -135,7 +135,7 @@ async function createDIDFile() {
     id: process.env.VERIFICATION_METHOD,
     verificationMethod: [
       {
-        id: process.env.VERIFICATION_METHOD,
+        id: [process.env.VERIFICATION_METHOD + '#JWK2020-RSA'],
         type: 'JsonWebKey2020',
         controller: process.env.CONTROLLER,
         publicKeyJwk,
